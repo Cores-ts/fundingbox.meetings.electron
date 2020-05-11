@@ -20,6 +20,9 @@ const path = require('path');
 const URL = require('url');
 const config = require('./app/features/config');
 
+// Deep linked url
+let deeplinkingUrl;
+
 // We need this because of https://github.com/electron/electron/issues/18214
 app.commandLine.appendSwitch('disable-site-isolation-trials');
 
@@ -138,9 +141,11 @@ function createJitsiMeetWindow() {
         width: windowState.width,
         height: windowState.height,
         icon: path.resolve(basePath, './resources/icons/icon_512x512.png'),
-        minWidth: 800,
-        minHeight: 600,
+        minWidth: 1100,
+        minHeight: 800,
         show: false,
+        titleBarStyle: 'hidden',
+        plugins: true,
         webPreferences: {
             nativeWindowOpen: true,
             nodeIntegration: false,
@@ -165,6 +170,34 @@ function createJitsiMeetWindow() {
             shell.openExternal(url);
         }
     });
+
+    // Open the DevTools.
+    // mainWindow.webContents.openDevTools()
+
+    logEverywhere(`open-url# ${deeplinkingUrl}`);
+
+    // Protocol handler for win32
+    if (process.platform === 'win32') {
+        // Keep only command line / deep linked arguments
+        deeplinkingUrl = process.argv.slice(1);
+    }
+
+    if (deeplinkingUrl) {
+        if (mainWindow && mainWindow.webContents) {
+            mainWindow.webContents.executeJavaScript(`routeCall._onRoute("${deeplinkingUrl}")`);
+            deeplinkingUrl = undefined;
+        }
+    }
+
+    mainWindow.on('close', event => {
+        if (app.quitting) {
+            mainWindow = null;
+        } else {
+            event.preventDefault();
+            mainWindow.hide();
+        }
+    });
+
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
@@ -183,6 +216,11 @@ if (!gotInstanceLock) {
     process.exit(0);
 }
 
+if (!app.isDefaultProtocolClient('com.fundingbox.meetings')) {
+    // Define custom protocol handler. Deep linking works on packaged versions of the application!
+    app.setAsDefaultProtocolClient('com.fundingbox.meetings');
+}
+
 /**
  * Run the application.
  */
@@ -190,6 +228,8 @@ if (!gotInstanceLock) {
 app.on('activate', () => {
     if (mainWindow === null) {
         createJitsiMeetWindow();
+    } else {
+        mainWindow.show();
     }
 });
 
@@ -207,11 +247,51 @@ app.on('certificate-error',
 
 app.on('ready', createJitsiMeetWindow);
 
-app.on('second-instance', () => {
+app.on('will-finish-launching', () => {
+    // Protocol handler for osx
+    app.on('open-url', (event, url) => {
+        event.preventDefault();
+        deeplinkingUrl = url;
+        logEverywhere(`open-url-will-finish-launching# ${deeplinkingUrl}`);
+
+        if (mainWindow && mainWindow.webContents) {
+            mainWindow.webContents.executeJavaScript(`routeCall._onRoute("${deeplinkingUrl}")`);
+        }
+
+        if (mainWindow) {
+            mainWindow.isMinimized() && mainWindow.restore();
+            mainWindow.show();
+            mainWindow.focus();
+        }
+    });
+});
+
+/**
+ * Log both at dev console and at running node console instance
+ *
+ * @param {string} s - String.
+ * @returns {void}
+ */
+function logEverywhere(s) {
+    console.log(s);
+    if (mainWindow && mainWindow.webContents) {
+        mainWindow.webContents.executeJavaScript(`console.log("${s}")`);
+    }
+}
+
+app.on('second-instance', (e, argv) => {
     /**
      * If someone creates second instance of the application, set focus on
      * existing window.
      */
+
+    // Protocol handler for win32
+    // argv: An array of the second instance’s (command line / deep linked) arguments
+    if (process.platform === 'win32') {
+        // Keep only command line / deep linked arguments
+        deeplinkingUrl = argv.slice(1);
+    }
+
     if (mainWindow) {
         mainWindow.isMinimized() && mainWindow.restore();
         mainWindow.focus();
@@ -224,3 +304,6 @@ app.on('window-all-closed', () => {
         app.quit();
     }
 });
+
+// eslint-disable-next-line no-return-assign
+app.on('before-quit', () => app.quitting = true);

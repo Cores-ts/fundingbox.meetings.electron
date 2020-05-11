@@ -1,9 +1,9 @@
 {
-  "name": "jitsi-meet-electron",
-  "version": "2.0.2",
-  "description": "Electron application for Jitsi Meet",
+  "name": "fundingbox-meetings-electron",
+  "version": "1.0.0",
+  "description": "Electron application for FundingBox Meetings",
   "main": "./build/main.js",
-  "productName": "Jitsi Meet",
+  "productName": "FundingBox Meetings",
   "scripts": {
     "start": "webpack --config ./webpack.main.js --mode development && concurrently \"npm:watch\" \"electron ./build/main.js\"",
     "clean": "rm -rf node_modules build dist",
@@ -16,8 +16,16 @@
     "watch": "webpack --config ./webpack.renderer.js --mode development --watch --watch-poll"
   },
   "build": {
-    "appId": "org.jitsi.jitsi-meet",
-    "productName": "Jitsi Meet",
+    "appId": "com.fundingbox.meetings.desktop",
+    "productName": "FundingBox Meetings",
+    "protocols": {
+      "name": "com.fundingbox.meetings",
+      "schemes": [
+        "com.fundingbox.meetings",
+        "fundingbox.meetings",
+        "meetings"
+      ]
+    },
     "generateUpdatesFilesForAllChannels": true,
     "files": [
       "**/*",
@@ -26,15 +34,23 @@
       "!main.js"
     ],
     "mac": {
-      "artifactName": "jitsi-meet.${ext}",
+      "artifactName": "fundingbox-meetings.${ext}",
       "category": "public.app-category.video",
-      "darkModeSupport": true
+      "darkModeSupport": true,
+      "entitlements": "./build/entitlements.mac.plist",
+      "identity": "F82R864PVJ",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "We need access to your microphone so people you talk to can hear you.",
+        "NSCameraUsageDescription": "Allow your conversational partners to see you in a Meeting. You can turn off your video anytime during a call."
+      }
     },
     "linux": {
-      "artifactName": "jitsi-meet-${arch}.${ext}",
+      "artifactName": "fundingbox-meetings-${arch}.${ext}",
       "category": "VideoConference;AudioVideo;Audio;Video;Network",
-      "description": "Jitsi Meet Desktop App",
-      "executableName": "jitsi-meet",
+      "description": "FundingBox Meetings Desktop App",
+      "executableName": "fundingbox-meetings",
       "target": [
         {
           "arch": "x64",
@@ -43,7 +59,7 @@
       ]
     },
     "win": {
-      "artifactName": "jitsi-meet.${ext}",
+      "artifactName": "fundingbox-meetings.${ext}",
       "target": [
         {
           "arch": [
@@ -63,16 +79,17 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/jitsi/jitsi-meet-electron"
+    "url": "git://github.com/Cores-ts/fundingbox.meetings.electron"
   },
   "keywords": [
     "jingle",
     "webrtc",
     "xmpp",
     "electron",
-    "jitsi-meet"
+    "jitsi-meet",
+    "fundingbox-meetings"
   ],
-  "author": "Jitsi Team <support@jitsi.org>",
+  "author": "FundingBox Accelerator S.P. z.o.o. <support@fundingbox.com>",
   "readmeFilename": "README.md",
   "license": "Apache-2.0",
   "dependencies": {

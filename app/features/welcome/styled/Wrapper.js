@@ -3,7 +3,7 @@
 import styled from 'styled-components';
 
 export default styled.div`
-    background: #1D69D4;
+    background: url(b7c7f58fa636e60ed50c82c82ad0057e.png) #1a181f;
     display: flex;
     flex-direction: column;
     height: 100vh;

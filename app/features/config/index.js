@@ -3,7 +3,7 @@ export default {
     /**
      * The URL with extra information about the app / service.
      */
-    aboutURL: 'https://jitsi.org/what-is-jitsi/',
+    aboutURL: 'https://meetings.fundingbox.com/',
 
     /**
      * The URL to the source code repository.
@@ -13,25 +13,30 @@ export default {
     /**
      * Application name.
      */
-    appName: 'Jitsi Meet',
+    appName: 'FundingBox Meetings',
 
     /**
      * The default server URL of Jitsi Meet Deployment that will be used.
      */
-    defaultServerURL: 'https://meet.jit.si',
+    defaultServerURL: 'https://meetings.fundingbox.com',
 
     /**
      * URL to send feedback.
      */
-    feedbackURL: 'mailto:support@jitsi.org',
+    faqURL: 'https://meetings.fundingbox.com',
+
+    /**
+     * URL to send feedback.
+     */
+    feedbackURL: 'mailto:support@fundingbox.com',
 
     /**
      * The URL of Privacy Policy Page.
      */
-    privacyPolicyURL: 'https://jitsi.org/meet/privacy',
+    privacyPolicyURL: 'https://meetings.fundingbox.com/static/privacy',
 
     /**
      * The URL of Terms and Conditions Page.
      */
-    termsAndConditionsURL: 'https://jitsi.org/meet/terms'
+    termsAndConditionsURL: 'https://meetings.fundingbox.com/static/terms'
 };

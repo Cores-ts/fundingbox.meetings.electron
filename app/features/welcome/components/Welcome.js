@@ -18,7 +18,6 @@ import { normalizeServerURL } from '../../utils';
 
 import { Body, Form, Header, Wrapper } from '../styled';
 
-
 type Props = {
 
     /**
@@ -82,6 +81,7 @@ class Welcome extends Component<Props, State> {
      */
     componentDidMount() {
         this.props.dispatch(startOnboarding('welcome-page'));
+        window.routeCall = this;
     }
 
     /**
@@ -92,7 +92,7 @@ class Welcome extends Component<Props, State> {
     render() {
         return (
             <Page navigation = { <Navbar /> }>
-                <AtlasKitThemeProvider mode = 'light'>
+                <AtlasKitThemeProvider mode = 'global'>
                     <Wrapper>
                         { this._renderHeader() }
                         { this._renderBody() }
@@ -141,6 +141,37 @@ class Welcome extends Component<Props, State> {
 
             // Normalize the server URL.
             serverURL = normalizeServerURL(serverURL);
+        }
+
+        // Don't navigate if no room was specified.
+        if (!room) {
+            return;
+        }
+
+        this.props.dispatch(push('/conference', {
+            room,
+            serverURL
+        }));
+    }
+
+    /**
+     * Redirect and join conference.
+     *
+     * @param {string} conferenceID - Conference ID.
+     * @returns {void}
+     */
+    _onRoute(conferenceID) {
+        const inputURL = conferenceID;
+        const lastIndexOfSlash = inputURL.lastIndexOf('/');
+        let room;
+        let serverURL;
+
+        if (lastIndexOfSlash === -1) {
+            // This must be only the room name.
+            room = inputURL;
+        } else {
+            // Take the substring after last slash to be the room name.
+            room = inputURL.substring(lastIndexOfSlash + 1);
         }
 
         // Don't navigate if no room was specified.

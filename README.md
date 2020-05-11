@@ -2,8 +2,6 @@
 
 Desktop application for [Jitsi Meet] built with [Electron].
 
-![](screenshot.png)
-
 ## Features
 
 - Works with any Jitsi Meet deployment
