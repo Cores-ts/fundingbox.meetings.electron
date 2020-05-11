@@ -139,7 +139,7 @@ class Conference extends Component<Props, State> {
 
         this._ref.current.appendChild(script);
 
-        // Set a timer for 10s, if we haven't loaded the iframe by then,
+        // Set a timer for 15s, if we haven't loaded the iframe by then,
         // give up.
         this._loadTimer = setTimeout(() => {
             this._navigateToHome(
@@ -151,7 +151,7 @@ class Conference extends Component<Props, State> {
                 },
                 room,
                 serverURL);
-        },15000);
+        }, 15000);
     }
 
     /**
