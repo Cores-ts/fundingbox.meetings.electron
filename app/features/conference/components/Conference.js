@@ -151,7 +151,7 @@ class Conference extends Component<Props, State> {
                 },
                 room,
                 serverURL);
-        }, 10000);
+        },15000);
     }
 
     /**
