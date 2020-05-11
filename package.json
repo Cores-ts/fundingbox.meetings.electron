@@ -1,6 +1,6 @@
 {
   "name": "fundingbox-meetings-electron",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Electron application for FundingBox Meetings",
   "main": "./build/main.js",
   "productName": "FundingBox Meetings",
