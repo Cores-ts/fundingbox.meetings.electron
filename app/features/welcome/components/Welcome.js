@@ -231,7 +231,7 @@ class Welcome extends Component<Props, State> {
                             isInvalid = { locationError }
                             isLabelHidden = { true }
                             onChange = { this._onURLChange }
-                            placeholder = 'Enter a name for your conference'
+                            placeholder = 'Enter a name/ID for your meeting or a Meetings URL'
                             shouldFitContainer = { true }
                             type = 'text'
                             value = { this.state.url } />
