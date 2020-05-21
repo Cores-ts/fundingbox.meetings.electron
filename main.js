@@ -205,17 +205,22 @@ function createJitsiMeetWindow() {
     // Protocol handler for win32
     if (process.platform === 'win32') {
         // Keep only command line / deep linked arguments
-        deeplinkingUrl = process.argv.slice(1);
+        deeplinkingUrl = process.argv[1];
     }
 
-    if (deeplinkingUrl) {
-        if (mainWindow && mainWindow.webContents) {
-            mainWindow.webContents.executeJavaScript(`routeCall._onRoute("${deeplinkingUrl}")`);
-            deeplinkingUrl = undefined;
-        }
+    if (deeplinkingUrl && deeplinkingUrl !== '') {
+        logEverywhere(`deepLinkingUrl# ${deeplinkingUrl}`);
+        deeplinkingUrl = deeplinkingUrl.replace('com.fundingbox.meetings://', '').replace('/', '');
+        mainWindow.webContents.executeJavaScript(`routeCall.state.url = "${deeplinkingUrl}"`);
+        mainWindow.webContents.executeJavaScript('routeCall._onJoin()');
+        deeplinkingUrl = undefined;
     }
 
     mainWindow.on('close', event => {
+        if (process.platform === 'win32') {
+            app.quit();
+        }
+
         if (app.quitting) {
             mainWindow = null;
         } else {
@@ -227,6 +232,7 @@ function createJitsiMeetWindow() {
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
+
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
     });
@@ -316,9 +322,22 @@ app.on('second-instance', (e, argv) => {
     if (process.platform === 'win32') {
         // Keep only command line / deep linked arguments
         deeplinkingUrl = argv.slice(1);
+        for (let i = 0; i < deeplinkingUrl.length; ++i) {
+            if (deeplinkingUrl[i].indexOf('com.fundingbox.meetings') !== -1) {
+                deeplinkingUrl = deeplinkingUrl[i];
+                break;
+            }
+        }
     }
 
     if (mainWindow) {
+        if (process.platform === 'win32' && mainWindow.webContents && deeplinkingUrl) {
+            deeplinkingUrl = deeplinkingUrl.replace('com.fundingbox.meetings://', '').replace('/', '');
+            logEverywhere(`second-instance# ${deeplinkingUrl}`);
+            mainWindow.webContents.executeJavaScript(`routeCall.state.url = "${deeplinkingUrl}"`);
+            mainWindow.webContents.executeJavaScript('routeCall._onJoin()');
+            deeplinkingUrl = undefined;
+        }
         mainWindow.isMinimized() && mainWindow.restore();
         mainWindow.focus();
     }
